@@ -9,16 +9,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "typenum"
-version = "1.11.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "vector"
+name = "rust-linear-algebra"
 version = "0.1.0"
 dependencies = [
  "generic-array 0.13.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "typenum"
+version = "1.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum generic-array 0.13.2 (registry+https://github.com/rust-lang/crates.io-index)" = "0ed1e761351b56f54eb9dcd0cfaca9fd0daecf93918e1cfc01c8a3d26ee7adcd"

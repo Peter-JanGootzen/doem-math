@@ -1,5 +1,5 @@
 [package]
-name = "rust-linear-algebra"
+name = "rusty-linear-algebra"
 version = "0.1.0"
 authors = ["Peter-Jan Gootzen <peterjan@gootzen.net>"]
 edition = "2018"

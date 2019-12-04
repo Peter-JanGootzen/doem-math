@@ -21,7 +21,7 @@ pub struct Matrix<const M: usize, const N: usize> {
 impl<const M: usize, const N: usize> Default for Matrix<M, N> {
     fn default() -> Self {
         let mut data = StaticVec::<StaticVec::<Scalar, N>, M>::new();
-        for m in 0..M {
+        for _m in 0..M {
             data.push(StaticVec::<Scalar, N>::new());
         }
         Self {
@@ -65,12 +65,10 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         let mut array: [MaybeUninit::<[Scalar; N]>; M] = {
             MaybeUninit::uninit_array()
         };
-        // For some reason, this code only works if I println M
-        println!("M = {}", M);
         for i in 0..M {
             unsafe {
                 let n = array.get_unchecked_mut(i).as_mut_ptr();
-                std::ptr::copy_nonoverlapping(self.data[i].as_ptr(), n as *mut Scalar, std::mem::size_of::<[Scalar; N]>());
+                std::ptr::copy_nonoverlapping(self.data[i].as_ptr(), n as *mut Scalar, N);
             }
         }
         unsafe {

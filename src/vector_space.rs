@@ -1,6 +1,7 @@
 use staticvec::StaticVec;
 
 use std::mem::MaybeUninit;
+use std::fmt;
 
 pub type Vector<const M: usize> = Matrix<M, 1>;
 pub type Vector2 = Matrix<2, 1>;
@@ -16,6 +17,21 @@ pub struct Matrix<const M: usize, const N: usize> {
     // M = rows
     // N = columns
     pub data: StaticVec::<StaticVec::<Scalar, N>, M>
+}
+
+impl<const M: usize, const N: usize> fmt::Display for Matrix<M, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut s = "".to_owned();
+        for m in 0..M {
+            s.push_str("|");
+            for n in 0..N {
+                s.push_str(&self.data[m][n].to_string()); 
+                s.push_str(", ");
+            }
+            s.push_str("|\n");
+        }
+        f.write_str(&s)
+    }
 }
 
 impl<const M: usize, const N: usize> Default for Matrix<M, N> {
@@ -88,7 +104,6 @@ impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>
                 let mut f = 0.0;
                 for k in 0..M {
                     f +=  self.data[m][k] * rhs.data[k][p];
-                    println!("{} * {} = {}", rhs.data[m][k], self.data[k][p], rhs.data[m][k] * self.data[k][p]);
                 }
                 m_data.insert(p, f);
             }

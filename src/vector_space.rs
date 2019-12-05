@@ -1,7 +1,7 @@
 use staticvec::StaticVec;
 
-use std::mem::MaybeUninit;
 use std::fmt;
+use std::mem::MaybeUninit;
 
 pub type Vector<const M: usize> = Matrix<M, 1>;
 pub type Vector2 = Matrix<2, 1>;
@@ -16,7 +16,7 @@ pub type Scalar = f32;
 pub struct Matrix<const M: usize, const N: usize> {
     // M = rows
     // N = columns
-    pub data: StaticVec::<StaticVec::<Scalar, N>, M>
+    pub data: StaticVec<StaticVec<Scalar, N>, M>,
 }
 
 impl<const M: usize, const N: usize> fmt::Display for Matrix<M, N> {
@@ -25,7 +25,7 @@ impl<const M: usize, const N: usize> fmt::Display for Matrix<M, N> {
         for m in 0..M {
             s.push_str("|");
             for n in 0..N {
-                s.push_str(&self.data[m][n].to_string()); 
+                s.push_str(&self.data[m][n].to_string());
                 s.push_str(", ");
             }
             s.push_str("|\n");
@@ -36,33 +36,27 @@ impl<const M: usize, const N: usize> fmt::Display for Matrix<M, N> {
 
 impl<const M: usize, const N: usize> Default for Matrix<M, N> {
     fn default() -> Self {
-        let mut data = StaticVec::<StaticVec::<Scalar, N>, M>::new();
+        let mut data = StaticVec::<StaticVec<Scalar, N>, M>::new();
         for _m in 0..M {
             data.push(StaticVec::<Scalar, N>::new());
         }
-        Self {
-            data: data
-        }
+        Self { data }
     }
 }
 
 impl<const M: usize, const N: usize> Matrix<M, N> {
     pub fn new_from_array(array: [[Scalar; N]; M]) -> Matrix<M, N> {
-        let mut data = StaticVec::<StaticVec::<Scalar, N>, M>::new();
+        let mut data = StaticVec::<StaticVec<Scalar, N>, M>::new();
         for n in array.iter() {
             data.push(StaticVec::<Scalar, N>::new());
             for m in n.iter() {
                 data.last_mut().unwrap().push(*m);
             }
         }
-        Matrix::<M, N> {
-            data: data
-        }
+        Matrix::<M, N> { data }
     }
-    pub fn new_from_staticvec(staticvec: StaticVec::<StaticVec::<Scalar, N>, M>) -> Matrix<M, N> {
-        Matrix::<M, N> {
-            data: staticvec
-        }
+    pub fn new_from_staticvec(staticvec: StaticVec<StaticVec<Scalar, N>, M>) -> Matrix<M, N> {
+        Matrix::<M, N> { data: staticvec }
     }
     pub fn identity() -> Matrix<M, N> {
         let mut out = Matrix::<M, N>::default();
@@ -77,10 +71,8 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         }
         out
     }
-    pub fn into_array(&self) -> [[Scalar; N]; M] {
-        let mut array: [MaybeUninit::<[Scalar; N]>; M] = {
-            MaybeUninit::uninit_array()
-        };
+    pub fn copy_to_array(&self) -> [[Scalar; N]; M] {
+        let mut array: [MaybeUninit<[Scalar; N]>; M] = { MaybeUninit::uninit_array() };
         for i in 0..M {
             unsafe {
                 let n = array.get_unchecked_mut(i).as_mut_ptr();
@@ -88,13 +80,15 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
             }
         }
         unsafe {
-            std::mem::transmute_copy::<[MaybeUninit::<[Scalar; N]>; M], [[Scalar; N]; M]>(&array)
+            std::mem::transmute_copy::<[MaybeUninit<[Scalar; N]>; M], [[Scalar; N]; M]>(&array)
         }
     }
 }
 
 // Matrix<M, N> * Matrix<N, P> = Matrix<M, P>
-impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>> for &Matrix<M, N> {
+impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>>
+    for &Matrix<M, N>
+{
     type Output = Matrix<M, P>;
     fn mul(self, rhs: &Matrix<N, P>) -> Self::Output {
         let mut out = Matrix::<M, P>::default();
@@ -103,7 +97,7 @@ impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>
             for p in 0..P {
                 let mut f = 0.0;
                 for k in 0..M {
-                    f +=  self.data[m][k] * rhs.data[k][p];
+                    f += self.data[m][k] * rhs.data[k][p];
                 }
                 m_data.insert(p, f);
             }

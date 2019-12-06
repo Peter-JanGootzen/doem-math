@@ -1,4 +1,5 @@
 use rusty_linear_algebra::vector_space::Matrix4;
+use rusty_linear_algebra::vector_space::Matrix3;
 
 #[test]
 fn m4_mul_m4() {
@@ -17,12 +18,30 @@ fn m4_mul_m4() {
     let m3 = &m1 * &m2;
     println!("{}", m3.data[3][1]);
     assert_eq!(
-        m3.into_array(),
+        m3.copy_to_array(),
         [
             [1007.0, 325766.0, -2433.0, 130.0],
             [874.0, 244181.0, -1862.0, 79.0],
             [220.0, 164976.0, -646.0, 112.0],
             [566153.0, 11781245.0, 3979349.0, 243728.0],
+        ]
+    );
+}
+
+#[test]
+fn transpose() {
+    let m1 = Matrix3::new_from_array([
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ]);
+    let m1_t = m1.transpose();
+    assert_eq!(
+        m1_t.copy_to_array(),
+        [
+            [1.0, 4.0, 7.0],
+            [2.0, 5.0, 8.0],
+            [3.0, 6.0, 9.0],
         ]
     );
 }

@@ -83,6 +83,15 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
             std::mem::transmute_copy::<[MaybeUninit<[Scalar; N]>; M], [[Scalar; N]; M]>(&array)
         }
     }
+    pub fn transpose(&self) -> Matrix<M, N> {
+        let mut out = Matrix::<M, N>::default();
+        for m in 0..M {
+            for n in 0..N {
+                out.data[m].push(self.data[n][m]);
+            }
+        }
+        out
+    }
 }
 
 // Matrix<M, N> * Matrix<N, P> = Matrix<M, P>

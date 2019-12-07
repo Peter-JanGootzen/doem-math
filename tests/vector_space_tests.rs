@@ -65,3 +65,19 @@ fn rotate_2d() {
     assert!(approx_eq!(f32, v2.data[1][0], -1.0, ulps = 2));
     assert!(approx_eq!(f32, v2.data[2][0], 1.0, ulps = 2));
 }
+
+#[test]
+fn dot_product() {
+    let v1 = Vector3::new_from_array([
+        [1.0],
+        [2.0],
+        [3.0],
+    ]);
+    let v2 = Vector3::new_from_array([
+        [2.0],
+        [8.0],
+        [9.0],
+    ]);
+
+    assert_eq!(v1.dot_product(&v2), 45.0);
+}

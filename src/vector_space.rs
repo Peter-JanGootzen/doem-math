@@ -20,6 +20,16 @@ pub struct Matrix<const M: usize, const N: usize> {
     pub data: StaticVec<StaticVec<Scalar, N>, M>,
 }
 
+impl<const M: usize> Vector<M> {
+    pub fn dot_product(&self, rhs: &Vector<M>) -> Scalar {
+        let mut total = 0.0;
+        for m in 0..M {
+            total += self.data[m][0] * rhs.data[m][0];
+        }
+        total
+    }
+}
+
 impl<const M: usize, const N: usize> fmt::Display for Matrix<M, N> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut s = "".to_owned();

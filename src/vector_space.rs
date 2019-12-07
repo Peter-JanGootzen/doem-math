@@ -59,12 +59,9 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
     pub fn new_2d_rotation(angle: Scalar) -> Matrix<M, N> {
         assert!(M > 1);
         assert!(N > 1);
-        println!("{}", angle);
-        println!("{}", -angle.sin());
         let mut out = Matrix::<M, N>::identity();
         out.data[0][0] = angle.cos();
         out.data[1][0] = -angle.sin();
-        println!("{}", out);
         out.data[0][1] = angle.sin();
         out.data[1][1] = angle.cos();
 

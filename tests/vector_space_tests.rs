@@ -1,5 +1,8 @@
 use rusty_linear_algebra::vector_space::Matrix4;
 use rusty_linear_algebra::vector_space::Matrix3;
+use rusty_linear_algebra::vector_space::Vector3;
+use rusty_linear_algebra::vector_space::PI;
+use float_cmp::approx_eq;
 
 #[test]
 fn m4_mul_m4() {
@@ -44,4 +47,21 @@ fn transpose() {
             [3.0, 6.0, 9.0],
         ]
     );
+}
+
+#[test]
+fn rotate_2d() {
+    let v1 = Vector3::new_from_array([
+        [1.0],
+        [2.0],
+        [1.0],
+    ]);
+
+    let m1 = Matrix3::new_2d_rotation(0.5 * PI);
+    println!("{}", m1);
+    let v2 = &m1 * &v1;
+    println!("{}", v2);
+    assert!(approx_eq!(f32, v2.data[0][0], 2.0, ulps = 2));
+    assert!(approx_eq!(f32, v2.data[1][0], -1.0, ulps = 2));
+    assert!(approx_eq!(f32, v2.data[2][0], 1.0, ulps = 2));
 }

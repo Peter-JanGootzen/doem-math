@@ -4,14 +4,15 @@ use std::fmt;
 use std::mem::MaybeUninit;
 
 pub type Vector<const M: usize> = Matrix<M, 1>;
-pub type Vector2 = Matrix<2, 1>;
-pub type Vector3 = Matrix<3, 1>;
-pub type Vector4 = Matrix<4, 1>;
+pub type Vector2 = Vector<2>;
+pub type Vector3 = Vector<3>;
+pub type Vector4 = Vector<4>;
 
 pub type Matrix2 = Matrix<2, 2>;
 pub type Matrix3 = Matrix<3, 3>;
 pub type Matrix4 = Matrix<4, 4>;
 pub type Scalar = f32;
+pub const PI: f32 = std::f32::consts::PI;
 
 pub struct Matrix<const M: usize, const N: usize> {
     // M = rows
@@ -41,6 +42,23 @@ impl<const M: usize, const N: usize> Default for Matrix<M, N> {
             data.push(StaticVec::<Scalar, N>::new());
         }
         Self { data }
+    }
+}
+
+impl<const M: usize, const N: usize> Matrix<M, N> {
+    pub fn new_2d_rotation(angle: Scalar) -> Matrix<M, N> {
+        assert!(M > 1);
+        assert!(N > 1);
+        println!("{}", angle);
+        println!("{}", -angle.sin());
+        let mut out = Matrix::<M, N>::identity();
+        out.data[0][0] = angle.cos();
+        out.data[1][0] = -angle.sin();
+        println!("{}", out);
+        out.data[0][1] = angle.sin();
+        out.data[1][1] = angle.cos();
+
+        out
     }
 }
 

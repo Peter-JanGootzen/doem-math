@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 staticvec = "= 0.5.0"
+float-cmp = "0.6.0"

@@ -1,5 +1,6 @@
 use rusty_linear_algebra::vector_space::Matrix4;
 use rusty_linear_algebra::vector_space::Matrix3;
+use rusty_linear_algebra::vector_space::Vector3;
 
 #[test]
 fn m4_mul_m4() {
@@ -44,4 +45,20 @@ fn transpose() {
             [3.0, 6.0, 9.0],
         ]
     );
+}
+
+#[test]
+fn dot_product() {
+    let v1 = Vector3::new_from_array([
+        [1.0],
+        [2.0],
+        [3.0],
+    ]);
+    let v2 = Vector3::new_from_array([
+        [2.0],
+        [8.0],
+        [9.0],
+    ]);
+
+    assert_eq!(v1.dot_product(&v2), 45.0);
 }

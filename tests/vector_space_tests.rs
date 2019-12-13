@@ -1,7 +1,7 @@
-use rusty_linear_algebra::vector_space::Matrix4;
-use rusty_linear_algebra::vector_space::Matrix3;
-use rusty_linear_algebra::vector_space::Vector3;
-use rusty_linear_algebra::vector_space::PI;
+use doem_math::vector_space::Matrix4;
+use doem_math::vector_space::Matrix3;
+use doem_math::vector_space::Vector3;
+use doem_math::vector_space::PI;
 use float_cmp::approx_eq;
 
 #[test]

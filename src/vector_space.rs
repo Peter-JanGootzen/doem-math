@@ -8,9 +8,10 @@ pub type Vector2 = Vector<2>;
 pub type Vector3 = Vector<3>;
 pub type Vector4 = Vector<4>;
 
-pub type Matrix2 = Matrix<2, 2>;
-pub type Matrix3 = Matrix<3, 3>;
-pub type Matrix4 = Matrix<4, 4>;
+pub type SquareMatrix<const M: usize> = Matrix<M, M>;
+pub type Matrix2 = SquareMatrix<2>;
+pub type Matrix3 = SquareMatrix<3>;
+pub type Matrix4 = SquareMatrix<4>;
 pub type Scalar = f32;
 pub const PI: f32 = std::f32::consts::PI;
 
@@ -55,22 +56,50 @@ impl<const M: usize, const N: usize> Default for Matrix<M, N> {
     }
 }
 
-impl<const M: usize, const N: usize> Matrix<M, N> {
-    pub fn new_2d_rotation_x(angle: Scalar) -> Matrix<M, N> {
-           assert!(M > 1);
-           assert!(N > 1);
-           let mut out = Matrix::<M, N>::identity();
-           out.data[1][1] = angle.cos();
-           out.data[2][1] = angle.sin();
-           out.data[1][2] = -angle.sin();
-           out.data[2][2] = angle.cos();
-
-           out
+impl<const M: usize> SquareMatrix<M> {
+    pub fn identity() -> SquareMatrix<M> {
+        let mut out = SquareMatrix::<M>::default();
+        for (i, m) in out.data.iter_mut().enumerate() {
+            for n in 0..M {
+                if i == n {
+                    m.push(1.0);
+                } else {
+                    m.push(0.0);
+                }
+            }
+        }
+        out
     }
-    pub fn new_2d_rotation_y(angle: Scalar) -> Matrix<M, N> {
+    pub fn get_translation(translation: &Vector<{M - 1}>) -> SquareMatrix<M>  {
+        let mut out = SquareMatrix::<M>::identity();
+        for m in 0..M - 1 {
+            out[m][M - 1] = translation[m][0];
+        }
+        out
+    }
+    pub fn get_scaling<const P: usize>(scaling: &Vector<P>) -> SquareMatrix<M>  {
+        // todo static assert
+        assert!(P <= M, "The size of the vector is too big for this type of matrix");
+        let mut out = SquareMatrix::<M>::identity();
+        for p in 0..P {
+            out[p][p] = scaling[p][0]; 
+        }
+        out
+    }
+    // Rotations
+    pub fn new_2d_rotation_x(angle: Scalar) -> SquareMatrix<M> {
         assert!(M > 1);
-        assert!(N > 1);
-        let mut out = Matrix::<M, N>::identity();
+        let mut out = SquareMatrix::<M>::identity();
+        out.data[1][1] = angle.cos();
+        out.data[2][1] = angle.sin();
+        out.data[1][2] = -angle.sin();
+        out.data[2][2] = angle.cos();
+
+        out
+    }
+    pub fn new_2d_rotation_y(angle: Scalar) -> SquareMatrix<M> {
+        assert!(M > 1);
+        let mut out = SquareMatrix::<M>::identity();
         out.data[0][0] = angle.cos();
         out.data[0][2] = angle.sin();
         out.data[2][0] = -angle.sin();
@@ -78,10 +107,9 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         print!("{}" , out);
         out
     }
-    pub fn new_2d_rotation_z(angle: Scalar) -> Matrix<M, N> {
+    pub fn new_2d_rotation_z(angle: Scalar) -> SquareMatrix<M> {
         assert!(M > 1);
-        assert!(N > 1);
-        let mut out = Matrix::<M, N>::identity();
+        let mut out = SquareMatrix::<M>::identity();
         out.data[0][0] = angle.cos();
         out.data[0][1] = -angle.sin();
         out.data[1][0] = angle.sin();
@@ -89,6 +117,7 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
 
         out
     }
+
 }
 
 impl<const M: usize, const N: usize> Matrix<M, N> {
@@ -104,19 +133,6 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
     }
     pub fn new_from_staticvec(staticvec: StaticVec<StaticVec<Scalar, N>, M>) -> Matrix<M, N> {
         Matrix::<M, N> { data: staticvec }
-    }
-    pub fn identity() -> Matrix<M, N> {
-        let mut out = Matrix::<M, N>::default();
-        for (i, m) in out.data.iter_mut().enumerate() {
-            for n in 0..N {
-                if i == n {
-                    m.push(1.0);
-                } else {
-                    m.push(0.0);
-                }
-            }
-        }
-        out
     }
     pub fn copy_to_array(&self) -> [[Scalar; N]; M] {
         let mut array: [MaybeUninit<[Scalar; N]>; M] = { MaybeUninit::uninit_array() };
@@ -134,12 +150,15 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         let mut out = Matrix::<M, N>::default();
         for m in 0..M {
             for n in 0..N {
-                out.data[m].push(self.data[n][m]);
+                out[m].push(self[n][m]);
             }
         }
         out
     }
+
 }
+
+type Foo<const N: usize> = [i32; N + 1];
 
 // Matrix<M, N> * Matrix<N, P> = Matrix<M, P>
 impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>>
@@ -159,5 +178,20 @@ impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>
             }
         }
         out
+    }
+}
+
+impl<const M: usize, const N: usize> std::ops::Index<usize> for Matrix<M, N>
+{
+    type Output = StaticVec<Scalar, N>;
+    fn index<'a> (&'a self, index: usize) -> &'a Self::Output {
+        &self.data[index]
+    }
+}
+
+impl<const M: usize, const N: usize> std::ops::IndexMut<usize> for Matrix<M, N>
+{
+    fn index_mut<'a> (&'a mut self, index: usize) -> &'a mut Self::Output {
+        &mut self.data[index]
     }
 }

@@ -50,21 +50,59 @@ fn transpose() {
 }
 
 #[test]
-fn rotate_2d() {
+fn get_translation() {
     let v1 = Vector3::new_from_array([
         [1.0],
         [2.0],
-        [1.0],
+        [3.0],
     ]);
-
-    let m1 = Matrix3::new_2d_rotation(0.5 * PI);
-    println!("{}", m1);
-    let v2 = &m1 * &v1;
-    println!("{}", v2);
-    assert!(approx_eq!(f32, v2.data[0][0], 2.0, ulps = 2));
-    assert!(approx_eq!(f32, v2.data[1][0], -1.0, ulps = 2));
-    assert!(approx_eq!(f32, v2.data[2][0], 1.0, ulps = 2));
+    let translation_matrix = Matrix4::get_translation(&v1);
+    assert_eq!(
+        translation_matrix.copy_to_array(),
+        [
+            [1.0, 0.0, 0.0, 1.0],
+            [0.0, 1.0, 0.0, 2.0],
+            [0.0, 0.0, 1.0, 3.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+    );
 }
+
+#[test]
+fn get_scaling() {
+    let v1 = Vector3::new_from_array([
+        [50.0],
+        [2.0],
+        [3.0],
+    ]);
+    let translation_matrix = Matrix4::get_scaling(&v1);
+    assert_eq!(
+        translation_matrix.copy_to_array(),
+        [
+            [50.0, 0.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0, 0.0],
+            [0.0, 0.0, 3.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+    );
+}
+
+//#[test]
+//fn rotate_2d() {
+//    let v1 = Vector3::new_from_array([
+//        [1.0],
+//        [2.0],
+//        [1.0],
+//    ]);
+//
+//    let m1 = Matrix3::new_2d_rotation(0.5 * PI);
+//    println!("{}", m1);
+//    let v2 = &m1 * &v1;
+//    println!("{}", v2);
+//    assert!(approx_eq!(f32, v2.data[0][0], 2.0, ulps = 2));
+//    assert!(approx_eq!(f32, v2.data[1][0], -1.0, ulps = 2));
+//    assert!(approx_eq!(f32, v2.data[2][0], 1.0, ulps = 2));
+//}
 
 #[test]
 fn dot_product() {

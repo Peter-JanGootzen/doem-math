@@ -21,6 +21,12 @@ pub struct Matrix<const M: usize, const N: usize> {
     pub data: StaticVec<StaticVec<Scalar, N>, M>,
 }
 
+impl<const M: usize, const N: usize> Clone for Matrix<M, N> {
+    fn clone(&self) -> Matrix<M, N> {
+        Matrix::<M, N>::new_from_array(self.copy_to_array())
+    }
+}
+
 impl<const M: usize> Vector<M> {
     pub fn dot_product(&self, rhs: &Vector<M>) -> Scalar {
         let mut total = 0.0;

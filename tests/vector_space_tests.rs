@@ -1,6 +1,7 @@
 use doem_math::vector_space::Matrix4;
 use doem_math::vector_space::Matrix3;
 use doem_math::vector_space::Vector3;
+use doem_math::vector_space::Vector;
 use doem_math::vector_space::PI;
 use float_cmp::approx_eq;
 
@@ -87,21 +88,61 @@ fn get_scaling() {
     );
 }
 
+#[test]
+fn normalize() {
+    let v1 = Vector::<2>::new_from_array([
+        [4.0],
+        [3.0],
+    ]);
+    let norm_matrix = v1.normalize();
+    assert_eq!(
+        norm_matrix.copy_to_array(),
+        [
+            [0.8],
+            [0.6],
+        ]
+    );
+}
+
+#[test]
+fn mul_f32() {
+    let v1 = Vector3::new_from_array([
+        [50.0],
+        [2.0],
+        [3.0],
+    ]);
+    let norm_matrix = &v1 * 0.5;
+    assert_eq!(
+        norm_matrix.copy_to_array(),
+        [
+            [25.0],
+            [1.0],
+            [1.5]
+        ]
+    );
+}
+
 //#[test]
-//fn rotate_2d() {
+//fn rotate_x() {
 //    let v1 = Vector3::new_from_array([
 //        [1.0],
 //        [2.0],
-//        [1.0],
+//        [3.0],
 //    ]);
 //
-//    let m1 = Matrix3::new_2d_rotation(0.5 * PI);
+//    let m1 = Matrix3::new_2d_rotation_x((90.0/180.0)*PI);
 //    println!("{}", m1);
-//    let v2 = &m1 * &v1;
-//    println!("{}", v2);
-//    assert!(approx_eq!(f32, v2.data[0][0], 2.0, ulps = 2));
-//    assert!(approx_eq!(f32, v2.data[1][0], -1.0, ulps = 2));
-//    assert!(approx_eq!(f32, v2.data[2][0], 1.0, ulps = 2));
+//    assert!(approx_eq!(f32, m1.data[0][0], 1.0, ulps = 7));
+//    assert!(approx_eq!(f32, m1.data[0][1], 0.0, ulps = 7));
+//    assert!(approx_eq!(f32, m1.data[0][2], 0.0, ulps = 7));
+//
+//    assert!(approx_eq!(f32, m1.data[1][0], 0.0, ulps = 7));
+//    assert!(approx_eq!(f32, m1.data[1][1], -0.0, ulps = 8));
+//    assert!(approx_eq!(f32, m1.data[1][2], -1.0, ulps = 8));
+//
+//    assert!(approx_eq!(f32, m1.data[2][0], 0.0, ulps = 7));
+//    assert!(approx_eq!(f32, m1.data[2][1], 1.0, ulps = 7));
+//    assert!(approx_eq!(f32, m1.data[2][2], -0.0, ulps = 8));
 //}
 
 #[test]

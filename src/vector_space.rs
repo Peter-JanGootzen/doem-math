@@ -15,6 +15,7 @@ pub type Matrix4 = SquareMatrix<4>;
 pub type Scalar = f32;
 pub const PI: f32 = std::f32::consts::PI;
 
+
 pub struct Matrix<const M: usize, const N: usize> {
     // M = rows
     // N = columns
@@ -23,7 +24,9 @@ pub struct Matrix<const M: usize, const N: usize> {
 
 impl<const M: usize, const N: usize> Clone for Matrix<M, N> {
     fn clone(&self) -> Matrix<M, N> {
-        Matrix::<M, N>::new_from_array(self.copy_to_array())
+        Matrix::<M, N> {
+            data: self.data.clone()
+        }
     }
 }
 
@@ -110,7 +113,6 @@ impl<const M: usize> SquareMatrix<M> {
         out.data[0][2] = angle.sin();
         out.data[2][0] = -angle.sin();
         out.data[2][2] = angle.cos();
-        print!("{}" , out);
         out
     }
     pub fn new_2d_rotation_z(angle: Scalar) -> SquareMatrix<M> {
@@ -123,7 +125,6 @@ impl<const M: usize> SquareMatrix<M> {
 
         out
     }
-
 }
 
 impl<const M: usize, const N: usize> Matrix<M, N> {
@@ -161,7 +162,35 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         }
         out
     }
+}
 
+impl<const M: usize> Vector<M> {
+    pub fn normalize(&self) -> Vector<M> {
+        self * (1.0 / self.length())
+    }
+    pub fn length(&self) -> Scalar {
+        let mut total = 0.0;
+        for m in 0..M {
+            total += self[m][0].powi(2);
+        }
+        total.sqrt()
+    }
+}
+impl<const M: usize, const N: usize> std::ops::Mul<Scalar>
+    for &Matrix<M, N>
+{
+    type Output = Matrix<M, N>;
+    fn mul(self, rhs: Scalar) -> Self::Output {
+        let mut out = Matrix::<M, N>::new_from_array(self.copy_to_array());
+
+        for m in 0..M {
+            for n in 0..N {
+                out[m][n] = self[m][n] * rhs;
+            }
+        }
+
+        out
+    }
 }
 
 type Foo<const N: usize> = [i32; N + 1];

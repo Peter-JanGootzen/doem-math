@@ -229,8 +229,14 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
 }
 
 impl Matrix4 {
-    pub fn get_projection(fov: Scalar, screen_size_x: Scalar, screen_size_y: Scalar, near: Scalar, far: Scalar) -> Self {
-        Matrix4::identity()
+    pub fn get_projection(fovy: Scalar, aspect_ratio: Scalar, near: Scalar, far: Scalar) -> Self {
+        let f = f32::tan(fovy / 2.0).recip();
+        Matrix4::new_from_array([
+            [(f/aspect_ratio), 0.0, 0.0, 0.0],
+            [0.0, f, 0.0, 0.0],
+            [0.0, 0.0, (far+near)/(near-far), (2.0*far*near)/(near-far)],
+            [0.0, 0.0, -1.0, 0.0],
+        ])
     }
     pub fn get_view(eye: &Vector3, look_at: &Vector3, up: &Vector3) -> Self {
         let d = eye - look_at;
@@ -263,6 +269,17 @@ impl<const M: usize> Vector<M> {
             total += self[m][0].powi(2);
         }
         total.sqrt()
+    }
+    pub fn dimension_hop<const P: usize>(&self) -> Vector<P> {
+        let mut out = Vector::<P>::default();
+        for (p, p_data) in out.data.iter_mut().enumerate() {
+            if p < M {
+                p_data.insert(0, self[p][0]);
+            } else {
+                p_data.insert(0, 1.0);
+            }
+        }
+        out
     }
 }
 impl<const M: usize, const N: usize> std::ops::Mul<Scalar>

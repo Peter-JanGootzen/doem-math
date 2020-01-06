@@ -15,7 +15,6 @@ pub type Matrix4 = SquareMatrix<4>;
 pub type Scalar = f32;
 pub const PI: f32 = std::f32::consts::PI;
 
-
 pub struct Matrix<const M: usize, const N: usize> {
     // M = rows
     // N = columns
@@ -37,6 +36,16 @@ impl<const M: usize> Vector<M> {
             total += self.data[m][0] * rhs.data[m][0];
         }
         total
+    }
+
+}
+impl Vector3 {
+    pub fn cross_product(&self, rhs: &Vector3) -> Self {
+        Self::new_from_array([
+            [self[1][0] * rhs[2][0] - self[2][0] * rhs[1][0]],
+            [self[2][0] * rhs[0][0] - self[0][0] * rhs[2][0]],
+            [self[0][0] * rhs[1][0] - self[1][0] * rhs[0][0]]
+        ])
     }
 }
 
@@ -125,6 +134,52 @@ impl<const M: usize> SquareMatrix<M> {
 
         out
     }
+    pub fn get_rotation_matrix(rotation_vector: &Vector4, angle: Scalar) -> Matrix4 {
+        let x = rotation_vector[0][0];
+        let y = rotation_vector[1][0];
+        let z = rotation_vector[2][0];
+
+        // M1
+        let xz = Scalar::sqrt(x.powi(2) + z.powi(2));
+        let mut m1 = Matrix4::identity();
+        if xz != 0.0 {
+            let new_x = x / xz;
+            let new_z = z / xz;
+            m1 = Matrix4::new_from_array([
+                [new_x, 0.0, new_z, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [-new_z, 0.0, new_x, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ]);
+        }
+
+        // M2
+        let mut m2 = Matrix4::identity();
+        let xyz = Scalar::sqrt(x.powi(2) + y.powi(2) + z.powi(2));
+        if xyz != 0.0 {
+            m2 = Matrix4::new_from_array([
+                [xz/xyz,         y/xyz,  0.0, 0.0],
+                [-1.0 * (y/xyz), xz/xyz, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0]
+            ]);
+        }
+
+        // M3
+        let m3 = Matrix4::new_2d_rotation_x(angle);
+
+        // M4
+        let mut m4 = m2.clone();
+        m4[0][1] *= -1.0;
+        m4[1][0] *= -1.0;
+
+        // M5
+        let mut m5 = m1.clone();
+        m5[0][2] *= -1.0;
+        m5[2][0] *= -1.0;
+
+        &(&(&(&m5 * &m4) * &m3) * &m2) * &m1
+    }
 }
 
 impl<const M: usize, const N: usize> Matrix<M, N> {
@@ -140,6 +195,15 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
     }
     pub fn new_from_staticvec(staticvec: StaticVec<StaticVec<Scalar, N>, M>) -> Matrix<M, N> {
         Matrix::<M, N> { data: staticvec }
+    }
+    pub fn origin() -> Self {
+        let mut out = Matrix::<M, N>::default();
+        for m_data in out.data.iter_mut() {
+            for n in 0..N {
+                m_data.insert(n, 0.0);
+            }
+        }
+        out
     }
     pub fn copy_to_array(&self) -> [[Scalar; N]; M] {
         let mut array: [MaybeUninit<[Scalar; N]>; M] = { MaybeUninit::uninit_array() };
@@ -161,6 +225,31 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
             }
         }
         out
+    }
+}
+
+impl Matrix4 {
+    pub fn get_projection(fov: Scalar, screen_size_x: Scalar, screen_size_y: Scalar, near: Scalar, far: Scalar) -> Self {
+        Matrix4::identity()
+    }
+    pub fn get_view(eye: &Vector3, look_at: &Vector3, up: &Vector3) -> Self {
+        let d = eye - look_at;
+        let dn = d.normalize();
+        let r = up.cross_product(&d);
+        let rn = r.normalize();
+        let u = d.cross_product(&r);
+        let un = u.normalize();
+        let transformation = Self::new_from_array([
+            [rn[0][0], rn[1][0], rn[2][0], 0.0],
+            [un[0][0], un[1][0], un[2][0], 0.0],
+            [dn[0][0], dn[1][0], dn[2][0], 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        &transformation * &Self::get_translation(&Vector3::new_from_array([
+            [-eye[0][0]],
+            [-eye[1][0]],
+            [-eye[2][0]]
+        ]))
     }
 }
 
@@ -193,7 +282,36 @@ impl<const M: usize, const N: usize> std::ops::Mul<Scalar>
     }
 }
 
-type Foo<const N: usize> = [i32; N + 1];
+// Matrix<M, N> - Matrix<M, N> = Matrix<M, N>
+impl<const M: usize, const N: usize> std::ops::Sub<&Matrix<M, N>>
+    for &Matrix<M, N>
+{
+    type Output = Matrix<M, N>;
+    fn sub(self, rhs: &Matrix<M, N>) -> Self::Output {
+        let mut out = Matrix::<M, N>::default();
+        for (m, m_data) in out.data.iter_mut().enumerate() {
+            for n in 0..N {
+                m_data.insert(n, self[m][n] - rhs[m][n]);
+            }
+        }
+        out
+    }
+}
+// Matrix<M, N> + Matrix<M, N> = Matrix<M, N>
+impl<const M: usize, const N: usize> std::ops::Add<&Matrix<M, N>>
+    for &Matrix<M, N>
+{
+    type Output = Matrix<M, N>;
+    fn add(self, rhs: &Matrix<M, N>) -> Self::Output {
+        let mut out = Matrix::<M, N>::default();
+        for (m, m_data) in out.data.iter_mut().enumerate() {
+            for n in 0..N {
+                m_data.insert(n, self[m][n] + rhs[m][n]);
+            }
+        }
+        out
+    }
+}
 
 // Matrix<M, N> * Matrix<N, P> = Matrix<M, P>
 impl<const M: usize, const N: usize, const P: usize> std::ops::Mul<&Matrix<N, P>>

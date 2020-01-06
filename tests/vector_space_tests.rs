@@ -160,3 +160,58 @@ fn dot_product() {
 
     assert_eq!(v1.dot_product(&v2), 45.0);
 }
+
+#[test]
+fn cross_product() {
+    let v1 = Vector3::new_from_array([
+        [1.0],
+        [0.0],
+        [0.0],
+    ]);
+    let v2 = Vector3::new_from_array([
+        [0.0],
+        [1.0],
+        [0.0],
+    ]);
+    let result = v1.cross_product(&v2);
+
+    assert_eq!(result[0][0], 0.0);
+    assert_eq!(result[1][0], 0.0);
+    assert_eq!(result[2][0], 1.0);
+}
+
+#[test]
+fn sub() {
+    let m1 = Matrix3::new_from_array([
+        [2.0, 0.0, -1.0],
+        [-3.0, 2.0, 4.0],
+        [0.0, 0.0, 0.0],
+    ]);
+    let m2 = Matrix3::new_from_array([
+        [-2.0, -4.0, -3.0],
+        [3.0, 2.0, 0.0],
+        [0.0, 0.0, 0.0],
+    ]);
+
+    let result = &m1 - &m2;
+
+    assert_eq!(result[0][0], 4.0)
+}
+
+#[test]
+fn add() {
+    let m1 = Matrix3::new_from_array([
+        [2.0, 0.0, -1.0],
+        [-3.0, 2.0, 4.0],
+        [0.0, 0.0, 0.0],
+    ]);
+    let m2 = Matrix3::new_from_array([
+        [-2.0, -4.0, -3.0],
+        [3.0, 2.0, 0.0],
+        [0.0, 0.0, 0.0],
+    ]);
+
+    let result = &m1 + &m2;
+
+    assert_eq!(result[0][0], 0.0)
+}

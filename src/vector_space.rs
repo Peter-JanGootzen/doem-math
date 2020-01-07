@@ -37,8 +37,8 @@ impl<const M: usize> Vector<M> {
         }
         total
     }
-
 }
+
 impl Vector3 {
     pub fn cross_product(&self, rhs: &Vector3) -> Self {
         Self::new_from_array([
@@ -226,6 +226,15 @@ impl<const M: usize, const N: usize> Matrix<M, N> {
         }
         out
     }
+    pub fn sum(&self) -> Scalar {
+        let mut sum = 0.0;
+        for m in 0..M {
+            for n in 0..N {
+                sum += self[m][n];
+            }
+        }
+        sum
+    }
 }
 
 impl Matrix4 {
@@ -280,6 +289,9 @@ impl<const M: usize> Vector<M> {
             }
         }
         out
+    }
+    pub fn sign_length(&self) -> Scalar {
+        self.length() * self.sum().signum()
     }
 }
 impl<const M: usize, const N: usize> std::ops::Mul<Scalar>

@@ -1,11 +1,11 @@
 [package]
 name = "doem-math"
 version = "0.1.0"
-authors = ["Peter-Jan Gootzen <peterjan@gootzen.net>"]
+authors = ["Peter-Jan Gootzen <peterjan@gootzen.net>", "Bram-Boris Meerlo <me@bramboris.nl>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-staticvec = "0.6.2"
+staticvec = "0.7.7"
 float-cmp = "0.6.0"

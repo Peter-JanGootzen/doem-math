@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "doem-math"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "staticvec 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

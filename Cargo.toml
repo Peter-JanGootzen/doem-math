@@ -1,10 +1,11 @@
 [package]
 name = "doem-math"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Peter-Jan Gootzen <peterjan@gootzen.net>", "Bram-Boris Meerlo <me@bramboris.nl>"]
 description = "Const generic linear algebra math crate for 3D applications, made in conjunction with doem"
 edition = "2018"
 license = "GPL-3.0-only"
+repository = "https://github.com/Peter-JanGootzen/doem-math"
 
 [dependencies]
 staticvec = "0.8.0"

@@ -1,11 +1,10 @@
 [package]
 name = "doem-math"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Peter-Jan Gootzen <peterjan@gootzen.net>", "Bram-Boris Meerlo <me@bramboris.nl>"]
+description = "Const generic linear algebra math crate for 3D applications, made in conjunction with doem"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "GPL-3.0-only"
 
 [dependencies]
-staticvec = "0.7.7"
-float-cmp = "0.6.0"
+staticvec = "0.8.0"

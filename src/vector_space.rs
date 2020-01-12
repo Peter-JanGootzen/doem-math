@@ -105,7 +105,7 @@ impl<const M: usize> SquareMatrix<M> {
         out
     }
     // Rotations
-    pub fn new_2d_rotation_x(angle: Scalar) -> SquareMatrix<M> {
+    pub fn new_rotation_x(angle: Scalar) -> SquareMatrix<M> {
         assert!(M > 1);
         let mut out = SquareMatrix::<M>::identity();
         out.data[1][1] = angle.cos();
@@ -115,7 +115,7 @@ impl<const M: usize> SquareMatrix<M> {
 
         out
     }
-    pub fn new_2d_rotation_y(angle: Scalar) -> SquareMatrix<M> {
+    pub fn new_rotation_y(angle: Scalar) -> SquareMatrix<M> {
         assert!(M > 1);
         let mut out = SquareMatrix::<M>::identity();
         out.data[0][0] = angle.cos();
@@ -124,7 +124,7 @@ impl<const M: usize> SquareMatrix<M> {
         out.data[2][2] = angle.cos();
         out
     }
-    pub fn new_2d_rotation_z(angle: Scalar) -> SquareMatrix<M> {
+    pub fn new_rotation_z(angle: Scalar) -> SquareMatrix<M> {
         assert!(M > 1);
         let mut out = SquareMatrix::<M>::identity();
         out.data[0][0] = angle.cos();
@@ -166,7 +166,7 @@ impl<const M: usize> SquareMatrix<M> {
         }
 
         // M3
-        let m3 = Matrix4::new_2d_rotation_x(angle);
+        let m3 = Matrix4::new_rotation_x(angle);
 
         // M4
         let mut m4 = m2.clone();

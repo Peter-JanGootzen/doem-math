@@ -1,4 +1,9 @@
-![nightly](https://camo.githubusercontent.com/07824dbc41d7b25e7a2041f9cfab3cc3609dd650/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f72757374632d6e696768746c792d6c69676874677261792e737667)
+[![Rust-nightly][ri]][rl] [![Crates.io][ci]][cl]
+
+[ri]: https://img.shields.io/badge/rustc-nightly-lightgray.svg
+[rl]: https://www.rust-lang.org/
+[ci]: https://img.shields.io/crates/d/doem-math?logo=Rust&logoColor=orange
+[cl]: https://crates.io/crates/doem-math
 
 # doem-math
 
